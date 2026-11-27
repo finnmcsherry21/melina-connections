@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Melina Connections ♥</title>
+<script>
+/* ======================================================================
+   ✏️  EDIT YOUR PUZZLES HERE  ✏️
+   ----------------------------------------------------------------------
+   ONE puzzle is shown at a time. It changes automatically every Monday
+   at 12:00 AM Pacific time (San Luis Obispo time).
+
+   THE SCHEDULE = THE ORDER OF THE PUZZLES LIST BELOW, TOP TO BOTTOM.
+     • Week 0 (starting SETTINGS.startDate) shows the 1st puzzle,
+       week 1 the 2nd puzzle, and so on.
+     • When the list runs out it starts again from the top.
+     • To reorder: cut a whole { ... }, block and paste it somewhere else.
+     • To add: copy a whole { ... }, block, paste it, edit it.
+     • To remove: delete its whole { ... }, block.
+
+   Each puzzle needs:
+     title      – short name (shows above the board and on the end screen)
+     groups     – EXACTLY 4 groups. Each group has:
+                    name  – the category she sees once she solves it
+                    words – EXACTLY 4 words (short is best, ~10 letters max)
+                  The ORDER of the groups sets the colors / difficulty:
+                    1st = 🟨 yellow (easiest)    2nd = 🟦 light blue
+                    3rd = 🩷 pink               4th = 🟪 purple (trickiest)
+     winMessage – the note she sees when she finishes (\n = new line)
+   Optional:
+     seed       – any number; change it to get a different starting shuffle
+
+   THE RULES: 4 groups × 4 words = 16 tiles, and no word may appear twice
+   in the same puzzle (capitals and extra spaces don't count as different).
+   If something's off, the game shows a friendly message saying what to fix.
+
+   PREVIEW any puzzle (just for you – add to the end of the link):
+     ?week=5      → what week 5 will show
+     ?puzzle=12   → the 12th puzzle in the list below
+     ?date=2027-02-14 → what will show on that date
+   ====================================================================== */
+const SETTINGS = {
+  startDate: "2026-11-30",          // a MONDAY: week 0 begins here (Pacific time)
+  timeZone: "America/Los_Angeles",  // when "Monday" starts
+  mistakesAllowed: 4,               // wrong guesses before the puzzle ends
+  fromName: "Finn",                 // signature on the end screen
+  allowPreviewLinks: true,          // lets ?week= / ?puzzle= / ?date= work
+};
+
+const PUZZLES = [
+  { // week 0 – Nov 30
+    title: "Where it all began",
+    groups: [
+      { name: "Roman landmarks", words: ["Pantheon", "Colosseum", "Trevi", "Forum"] },
+      { name: "Melina's pasta order", words: ["Bowtie", "Rotini", "Cavatappi", "Alfredo"] },
+      { name: "Italian words", words: ["Amore", "Ciao", "Bella", "Grazie"] },
+      { name: "Roman ___", words: ["Holiday", "Numeral", "Empire", "Candle"] },
+    ],
+    winMessage: "Of all the people at the Pantheon that day, I got lucky and met you.\nBest thing Rome ever gave me (sorry, gelato). ♥",
+  },
+  { // week 1
+    title: "Things I love about you",
+    groups: [
+      { name: "Things I could stare at all day", words: ["Smile", "Laugh", "Eyes", "Heart"] },
+      { name: "What I call you", words: ["Babe", "Angel", "Sunshine", "Honey"] },
+      { name: "Come here and give me a…", words: ["Hug", "Squeeze", "Snuggle", "Embrace"] },
+      { name: "___ of my life", words: ["Love", "Light", "Time", "Story"] },
+    ],
+    winMessage: "You are the love, the light, the time AND the story of my life.\nAlso the reason my camera roll is 90% you. ♥",
+  },
+  { // week 2
+    title: "Melina's sweet tooth",
+    groups: [
+      { name: "Her candy stash", words: ["Haribo", "Lifesavers", "Licorice", "Bottle Pop"] },
+      { name: "Better with vanilla ice cream", words: ["Lava cake", "Apple pie", "Brownie", "Cobbler"] },
+      { name: "Cherry ___", words: ["Jello", "Blossom", "Coke", "Tomato"] },
+      { name: "Sweet ___", words: ["Pea", "Tooth", "Heart", "Talk"] },
+    ],
+    winMessage: "Sweetest girl, sweetest tooth.\nLava cake with vanilla ice cream is on me this week. 🍫",
+  },
+  { // week 3
+    title: "Bootless in the Vatican",
+    groups: [
+      { name: "Vatican City sights", words: ["Sistine", "St. Peter's", "Pope", "Swiss Guard"] },
+      { name: "Footwear", words: ["Boots", "Sandals", "Heels", "Sneakers"] },
+      { name: "Things you lose on vacation", words: ["Passport", "Charger", "Sunglasses", "Your mind"] },
+      { name: "___less", words: ["Clue", "Fear", "Shame", "Speech"] },
+    ],
+    winMessage: "Smallest country in the world, biggest footwear crisis of our relationship. 👢\nStill the cutest person in Vatican City.",
+  },
+  { // week 4
+    title: "Order like Melina",
+    groups: [
+      { name: "In-N-Out lingo", words: ["Double double", "Protein style", "Animal style", "Flying Dutchman"] },
+      { name: "Sodas", words: ["Coke Zero", "Diet Coke", "Root beer", "Dr Pepper"] },
+      { name: "On her burger", words: ["Onion", "Lettuce", "Tomato", "Spread"] },
+      { name: "Double ___", words: ["Date", "Trouble", "Agent", "Chin"] },
+    ],
+    winMessage: "Double double, protein style, onions, 2 extra sauces, normal fries,\nand a drink that is \"2/3 Diet Coke, 1/3 Coke\" but actually 100% Coke Zero.\nI'd memorize it a hundred times over. 🍔",
+  },
+  { // week 5
+    title: "Malta",
+    groups: [
+      { name: "Places in Malta", words: ["Valletta", "Gozo", "Comino", "Mdina"] },
+      { name: "Beach bag", words: ["Sunscreen", "Towel", "Flip flops", "Snorkel"] },
+      { name: "Blue ___", words: ["Lagoon", "Grotto", "Moon", "Jeans"] },
+      { name: "Maltese ___", words: ["Falcon", "Cross", "Dog", "Language"] },
+    ],
+    winMessage: "Malta was gorgeous, but the view I kept looking at was you. 🌊",
+  },
+  { // week 6
+    title: "Sip sip hooray",
+    groups: [
+      { name: "Boba shop orders", words: ["Rose milk", "Thai tea", "Passion fruit", "Taro"] },
+      { name: "Party drinks", words: ["Jager bomb", "Moscow mule", "Margarita", "Mimosa"] },
+      { name: "Caffeine fixes", words: ["Latte", "Espresso", "Red Bull", "Cold brew"] },
+      { name: "Temperature scales", words: ["Celsius", "Kelvin", "Fahrenheit", "Centigrade"] },
+    ],
+    winMessage: "Cheers to you! 🥂\nNext round of lavender vanilla lattes (or Jäger bombs…) is on me.",
+  },
+  { // week 7
+    title: "What I call you",
+    groups: [
+      { name: "Pet names", words: ["Babe", "Angel", "Princess", "Sweetie"] },
+      { name: "Sweet treats", words: ["Honey", "Sugar", "Candy", "Cupcake"] },
+      { name: "___ pie", words: ["Cutie", "Apple", "Pumpkin", "Pot"] },
+      { name: "Disney princesses", words: ["Belle", "Ariel", "Jasmine", "Aurora"] },
+    ],
+    winMessage: "Babe, angel, cutie pie… mostly just \"mine.\" 💛",
+  },
+  { // week 8
+    title: "Postcards from Prague",
+    groups: [
+      { name: "Prague sights", words: ["Castle", "Charles Bridge", "Old Town", "Lennon Wall"] },
+      { name: "Czech eats & drinks", words: ["Trdelnik", "Pilsner", "Goulash", "Dumplings"] },
+      { name: "Chess pieces", words: ["King", "Queen", "Bishop", "Knight"] },
+      { name: "Sounds like a country", words: ["Check", "Hungry", "Chilly", "Grease"] },
+    ],
+    winMessage: "You're my Czech mate. That's it, that's the message. 🏰",
+  },
+  { // week 9
+    title: "Buda + Pest",
+    groups: [
+      { name: "Budapest sights", words: ["Parliament", "Chain Bridge", "Buda Castle", "Thermal baths"] },
+      { name: "Hungarian eats", words: ["Langos", "Paprika", "Chimney cake", "Goulash"] },
+      { name: "European rivers", words: ["Danube", "Thames", "Seine", "Tiber"] },
+      { name: "Bath ___", words: ["Robe", "Tub", "Bomb", "Salts"] },
+    ],
+    winMessage: "Hot baths, ruin bars and goulash. Every city is better with you in it. ♨️",
+  },
+  { // week 10 – Feb 8 (Valentine's week)
+    title: "Love you to pieces",
+    groups: [
+      { name: "Valentine's Day", words: ["Roses", "Chocolate", "Card", "Cupid"] },
+      { name: "Ways to kiss", words: ["Smooch", "Peck", "Snog", "Mwah"] },
+      { name: "Love ___", words: ["Letter", "Bug", "Seat", "Birds"] },
+      { name: "Things with arrows", words: ["Quiver", "Keyboard", "Weathervane", "Robin Hood"] },
+    ],
+    winMessage: "Happy Valentine's week, sweetheart.\nAll the hugs, kisses and cuddles are yours. Forever. 💌",
+  },
+  { // week 11
+    title: "Never again: Duplex",
+    groups: [
+      { name: "Next-morning cures", words: ["Water", "Advil", "Gatorade", "Pedialyte"] },
+      { name: "At the bar", words: ["Shots", "Bouncer", "Tab", "DJ"] },
+      { name: "Boyfriend hero moves", words: ["Piggyback", "Tuck in", "Snacks", "Hold hair"] },
+      { name: "Types of homes", words: ["Duplex", "Condo", "Studio", "Loft"] },
+    ],
+    winMessage: "Worst night, best recovery crew.\nNever again. I'll always get you home safe. 💙",
+  },
+  { // week 12
+    title: "That hostel… 😳",
+    groups: [
+      { name: "Hostel essentials", words: ["Bunk", "Locker", "Earplugs", "Keycard"] },
+      { name: "Sounds through the wall", words: ["Snoring", "Creaking", "Whispers", "Alarm"] },
+      { name: "Thin ___", words: ["Mints", "Ice", "Air", "Crust"] },
+      { name: "___ bed", words: ["Water", "Flower", "Sofa", "Sea"] },
+    ],
+    winMessage: "We survived it. We will never speak of it. (We will absolutely speak of it.) 🙈",
+  },
+  { // week 13
+    title: "Panama",
+    groups: [
+      { name: "Panama sights", words: ["Canal", "Casco Viejo", "Locks", "San Blas"] },
+      { name: "Tropical fruit", words: ["Mango", "Papaya", "Pineapple", "Coconut"] },
+      { name: "Hats", words: ["Fedora", "Beret", "Beanie", "Bucket"] },
+      { name: "Palindromes", words: ["Kayak", "Racecar", "Level", "Civic"] },
+    ],
+    winMessage: "A man, a plan, a canal: Panama.\nA man, a plan, a girlfriend: perfect. 🦥",
+  },
+  { // week 14
+    title: "Slice slice baby",
+    groups: [
+      { name: "Pizza toppings", words: ["Pepperoni", "Mushroom", "Olives", "Peppers"] },
+      { name: "Salads", words: ["Caesar", "Wedge", "Cobb", "Greek"] },
+      { name: "SLO date spots", words: ["Nate's on Marsh", "Cobalt Blue", "Giuseppe's", "Woodstock's"] },
+      { name: "Pizza ___", words: ["Hut", "Cutter", "Stone", "Party"] },
+    ],
+    winMessage: "You have a pizza my heart. Woodstock's BBQ chicken this week? 🍕",
+  },
+  { // week 15
+    title: "Juicy",
+    groups: [
+      { name: "Melina's fruit bowl", words: ["Watermelon", "Nectarine", "Mango", "Pineapple"] },
+      { name: "Yellow things", words: ["Tulip", "Lemon", "Sunflower", "Taxi"] },
+      { name: "Light blue things", words: ["Sky", "Pool", "Robin's egg", "Tiffany box"] },
+      { name: "Fruity brands", words: ["Apple", "Blackberry", "Orange", "Banana Republic"] },
+    ],
+    winMessage: "Whatever's in season, I'm picking you. 🍉",
+  },
+  { // week 16
+    title: "When in Rome",
+    groups: [
+      { name: "Roman plates", words: ["Carbonara", "Cacio e pepe", "Suppli", "Gelato"] },
+      { name: "Italian rides", words: ["Vespa", "Fiat", "Ferrari", "Lambo"] },
+      { name: "Things you toss", words: ["Coin", "Salad", "Dough", "Bouquet"] },
+      { name: "Hidden ROME", words: ["Chrome", "Dromedary", "Palindrome", "Promenade"] },
+    ],
+    winMessage: "Ti amo, Melina. Let's go back someday, toss another coin in the Trevi, and do it all again. 🇮🇹",
+  },
+  { // week 17
+    title: "Comfort food",
+    groups: [
+      { name: "Her dinner picks", words: ["Butter chicken", "Pineapple curry", "Scallops", "Smash burger"] },
+      { name: "Pasta shapes", words: ["Bowtie", "Rotini", "Cavatappi", "Penne"] },
+      { name: "Butter___", words: ["Fly", "Cup", "Fingers", "Scotch"] },
+      { name: "Neckwear", words: ["Scarf", "Cravat", "Ascot", "Choker"] },
+    ],
+    winMessage: "You're the butter to my chicken and the curry to my pineapple. 🍛\nDinner's on me.",
+  },
+  { // week 18
+    title: "Lunch break",
+    groups: [
+      { name: "Subway subs", words: ["Spicy Italian", "Meatball", "Cold cut", "BMT"] },
+      { name: "Other names for a subway", words: ["Tube", "Metro", "Underground", "El"] },
+      { name: "Other names for a sub", words: ["Hero", "Hoagie", "Grinder", "Po' boy"] },
+      { name: "___way", words: ["Run", "Hall", "Free", "Milky"] },
+    ],
+    winMessage: "Spicy Italian, footlong, and you across the table. Perfect lunch. 🥪",
+  },
+  { // week 19
+    title: "The perfect iced tea",
+    groups: [
+      { name: "Kinds of milk", words: ["Oat", "Almond", "Whole", "Skim"] },
+      { name: "Sweeteners", words: ["Sweet'N Low", "Splenda", "Stevia", "Equal"] },
+      { name: "Pink things", words: ["Flamingo", "Bubblegum", "Peony", "Piglet"] },
+      { name: "___ tea", words: ["Iced", "High", "Green", "Bubble"] },
+    ],
+    winMessage: "Unsweetened tea, one pink packet, and the sweetest girl. 🩷",
+  },
+  { // week 20
+    title: "Boyfriend of the year",
+    groups: [
+      { name: "Things I'd do for you", words: ["Flowers", "Love letter", "Back rub", "Forehead kiss"] },
+      { name: "Date ideas", words: ["Picnic", "Movie night", "Sunset walk", "Stargazing"] },
+      { name: "Flowers", words: ["Tulip", "Rose", "Peony", "Daisy"] },
+      { name: "___bug", words: ["Love", "Lady", "Bed", "Jitter"] },
+    ],
+    winMessage: "Nominating myself for boyfriend of the year.\nMy acceptance speech is just me saying your name. 🏆",
+  },
+  { // week 21
+    title: "Her colors",
+    groups: [
+      { name: "Shades of yellow", words: ["Lemon", "Mustard", "Canary", "Gold"] },
+      { name: "Shades of blue", words: ["Sky", "Baby", "Cobalt", "Navy"] },
+      { name: "Feeling blue", words: ["Sad", "Down", "Glum", "Mopey"] },
+      { name: "Yellow ___", words: ["Submarine", "Pages", "Jacket", "Card"] },
+    ],
+    winMessage: "Yellow tulips are coming your way. You're my sunshine. 🌷",
+  },
+  { // week 22
+    title: "Moscow mule o'clock",
+    groups: [
+      { name: "In a Moscow mule", words: ["Vodka", "Ginger", "Lime", "Ice"] },
+      { name: "Pack animals", words: ["Mule", "Donkey", "Llama", "Camel"] },
+      { name: "Capitals we've been to", words: ["Rome", "Prague", "Budapest", "Valletta"] },
+      { name: "___ beer", words: ["Root", "Craft", "Draft", "Pong"] },
+    ],
+    winMessage: "Copper mugs up! 🍹\nTo you, my favorite travel buddy and drinking buddy.",
+  },
+  { // week 23
+    title: "Zero to hero",
+    groups: [
+      { name: "Coca-Cola family", words: ["Coke Zero", "Diet Coke", "Sprite", "Fanta"] },
+      { name: "Absolutely nothing", words: ["Nada", "Zilch", "Nil", "Zip"] },
+      { name: "Soda fountain", words: ["Root beer", "Dr Pepper", "Cream soda", "Ginger ale"] },
+      { name: "___ zero", words: ["Ground", "Patient", "Absolute", "Sub"] },
+    ],
+    winMessage: "Chances I stop loving you: zero. Zilch. Nada. 🥤",
+  },
+  { // week 24
+    title: "Sugar rush",
+    groups: [
+      { name: "Gummy shapes", words: ["Bears", "Worms", "Sharks", "Rings"] },
+      { name: "Things that are tubes", words: ["Straw", "Pipe", "Snorkel", "Toothpaste"] },
+      { name: "Candy brands", words: ["Haribo", "Nerds", "Skittles", "Lifesavers"] },
+      { name: "Life___", words: ["Guard", "Boat", "Time", "Line"] },
+    ],
+    winMessage: "My little candy goblin. I love you to the bottom of the Baby Bottle Pop. 🍭",
+  },
+  { // week 25
+    title: "Coffee date",
+    groups: [
+      { name: "Latte flavors", words: ["Lavender", "Vanilla", "Hazelnut", "Caramel"] },
+      { name: "Coffee drinks", words: ["Espresso", "Cortado", "Macchiato", "Cappuccino"] },
+      { name: "Purple things", words: ["Grape", "Eggplant", "Plum", "Amethyst"] },
+      { name: "___ bean", words: ["Jelly", "Kidney", "Mr.", "Baked"] },
+    ],
+    winMessage: "You're my favorite part of every morning.\nLavender vanilla latte on me? ☕",
+  },
+  { // week 26
+    title: "Passport stamps",
+    groups: [
+      { name: "Countries we've explored", words: ["Italy", "Malta", "Hungary", "Panama"] },
+      { name: "Money we spent", words: ["Euro", "Forint", "Koruna", "Balboa"] },
+      { name: "Don't forget to pack…", words: ["Passport", "Boots", "Adapter", "Boarding pass"] },
+      { name: "___ canal", words: ["Suez", "Erie", "Root", "Ear"] },
+    ],
+    winMessage: "Rome, Malta, Prague, Budapest, Panama… and we're just getting started.\nWhere to next, my love? ✈️",
+  },
+  { // week 27
+    title: "Meet me at the Pantheon",
+    groups: [
+      { name: "How we met", words: ["Rome", "Pantheon", "Summer", "Fate"] },
+      { name: "Gelato flavors", words: ["Pistachio", "Fragola", "Nocciola", "Limone"] },
+      { name: "Things with domes", words: ["Capitol", "Igloo", "Observatory", "Snow globe"] },
+      { name: "Lucky ___", words: ["Star", "Charm", "Break", "Streak"] },
+    ],
+    winMessage: "Half a year of weekly puzzles, and I'd still pick you at the Pantheon every single time. ♥",
+  },
+];
+/* ======================================================================
+   🚫  You don't need to edit anything below this line.
+   ====================================================================== */
+</script>
+<style>
+  :root{
+    --blue:#aedfee; --yellow:#f8cd05; --pink:#f7bfd6; --purple:#c3b1ef;
+    --tile:#efede3; --tileSel:#5a594e; --ink:#121212; --muted:#6b6b6b;
+    --bg:#ffffff; --line:#e3e3e3; --heart:#e8457a;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:"Libre Franklin","Franklin Gothic Medium","Helvetica Neue",Helvetica,Arial,sans-serif;
+    overscroll-behavior:none}
+  body{display:flex; flex-direction:column; min-height:100dvh}
+  button{font-family:inherit; color:inherit}
+  header{display:flex; align-items:center; justify-content:space-between; padding:10px 14px;
+    border-bottom:1px solid var(--line); padding-top:max(10px, env(safe-area-inset-top))}
+  header h1{font-family:Georgia,"Times New Roman",serif; font-size:20px; margin:0; font-weight:700; letter-spacing:.2px}
+  header h1 .h{color:var(--heart)}
+  .iconbtn{background:none; border:0; font-size:22px; width:40px; height:40px; border-radius:50%; cursor:pointer; display:grid; place-items:center}
+  .iconbtn:hover{background:#f2f2f2}
+  main{flex:1; display:flex; flex-direction:column; align-items:center; padding:12px 14px calc(14px + env(safe-area-inset-bottom)); gap:12px; width:100%; max-width:600px; margin:0 auto; position:relative}
+  .theme{width:100%; max-width:380px; border-radius:10px; overflow:hidden; border:1px solid #cfe9f2; text-align:center}
+  .theme .lbl{background:var(--blue); font-size:12px; font-weight:700; letter-spacing:1.2px; padding:5px; text-transform:uppercase}
+  .theme .txt{font-size:19px; font-weight:700; padding:10px 8px}
+  .sub{font-size:12.5px; color:var(--muted); margin-top:-4px; text-align:center}
+  .instr{font-size:16px; margin:2px 0 0}
+  .board{width:100%; max-width:560px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; user-select:none; -webkit-user-select:none}
+  .tile{height:clamp(66px, 19vw, 82px); border:0; border-radius:8px; background:var(--tile); cursor:pointer; padding:4px 5px;
+    display:flex; align-items:center; justify-content:center; font-weight:700; text-transform:uppercase; letter-spacing:.2px;
+    transition:background .15s, color .15s, transform .12s; touch-action:manipulation; min-width:0}
+  .tile .t{display:block; width:100%; max-height:100%; text-align:center; line-height:1.1; overflow:hidden;
+    word-break:normal; overflow-wrap:normal; white-space:normal; font-size:18px}
+  .tile:active{transform:scale(.96)}
+  .tile.sel{background:var(--tileSel); color:#fff}
+  .tile.jump{animation:jump .3s ease}
+  .tile.shake{animation:shake .35s}
+  @keyframes jump{40%{transform:translateY(-8px)}}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .bar{grid-column:1 / -1; height:clamp(66px, 19vw, 82px); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:4px 10px}
+  .bar h3{margin:0; font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.3px}
+  .bar p{margin:3px 0 0; font-size:14.5px; text-transform:uppercase}
+  .bar.new{animation:pop .4s}
+  .bar.revealed{opacity:.92}
+  @keyframes pop{0%{transform:scale(.9); opacity:.3} 60%{transform:scale(1.03)} 100%{transform:scale(1); opacity:1}}
+  .c0{background:var(--yellow)} .c1{background:var(--blue)} .c2{background:var(--pink)} .c3{background:var(--purple)}
+  .mistakes{display:flex; align-items:center; gap:10px; font-size:15px; min-height:22px}
+  .dots{display:flex; gap:9px} .dot{width:14px; height:14px; border-radius:50%; background:#5a594e; transition:transform .3s, opacity .3s}
+  .dot.gone{transform:scale(0); opacity:0}
+  .controls{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+  .pill{border:1.5px solid var(--ink); background:#fff; border-radius:999px; padding:12px 18px; font-size:15.5px; font-weight:700; cursor:pointer; min-width:100px}
+  .pill.dark{background:var(--ink); color:#fff}
+  .pill:disabled{cursor:default; color:#9a9a9a; border-color:#c8c8c8; background:#fff}
+  .nextline{font-size:14px; color:var(--muted); text-align:center} .nextline b{color:var(--ink); font-variant-numeric:tabular-nums}
+  .hearts{font-size:12px; color:var(--heart); letter-spacing:6px; opacity:.7}
+  .toast{position:absolute; left:50%; top:118px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:11px 16px; border-radius:8px;
+    font-weight:700; font-size:15px; z-index:15; pointer-events:none; opacity:0; transition:opacity .2s; white-space:nowrap}
+  .toast.show{opacity:1}
+  .error{max-width:440px; background:#fff4f4; border:1px solid #f0c2c2; border-radius:12px; padding:16px 18px; line-height:1.45; font-size:15px}
+  .error h3{margin:0 0 6px} .error ul{padding-left:20px; margin:8px 0} .error code{background:#fff; padding:1px 5px; border-radius:4px; border:1px solid #eee}
+  .preview{background:#fff7d6; border:1px solid #f1df8a; border-radius:8px; font-size:12px; padding:4px 10px}
+  /* modals */
+  .overlay{position:fixed; inset:0; background:rgba(255,255,255,.72); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:20; padding:18px}
+  .overlay.show{display:flex}
+  .modal{background:#fff; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.18); width:100%; max-width:400px; max-height:88dvh; overflow:auto; padding:22px 20px; position:relative}
+  .modal h2{font-family:Georgia,serif; margin:0 0 12px; font-size:24px}
+  .close{position:absolute; top:10px; right:10px}
+  .row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
+  .btn{flex:1; border-radius:999px; padding:12px 16px; font-size:16px; font-weight:700; cursor:pointer; border:1.5px solid var(--ink); background:#fff}
+  .btn.primary{background:var(--ink); color:#fff}
+  .btn.small{flex:none; padding:7px 14px; font-size:13px}
+  .win{text-align:center}
+  .win .big{font-size:44px; line-height:1}
+  .win .grid{display:inline-grid; grid-template-columns:repeat(4,18px); gap:4px; margin:6px 0 4px}
+  .win .grid span{width:18px; height:18px; border-radius:4px}
+  .win .msg{white-space:pre-line; font-size:17px; line-height:1.5; margin:12px 0 6px}
+  .win .sig{font-family:Georgia,serif; font-style:italic; font-size:18px}
+  .win .next{margin-top:14px; font-size:14px; color:var(--muted)}
+  .win .next b{color:var(--ink); font-variant-numeric:tabular-nums}
+  .help p{line-height:1.5; margin:8px 0}
+  .help .ex{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0}
+  .help .ex span{padding:3px 8px; border-radius:6px; font-size:12.5px; font-weight:700}
+  .floatheart{position:fixed; bottom:-30px; font-size:24px; pointer-events:none; z-index:30; animation:floatup 3s ease-in forwards}
+  @keyframes floatup{to{transform:translateY(-110dvh) rotate(25deg); opacity:0}}
+  @media (min-width:700px){ main{padding-top:20px} .bar h3{font-size:18px} .bar p{font-size:16px} }
+</style></head>
+<body>
+<header>
+  <span style="width:40px"></span>
+  <h1>Melina Connections <span class="h">♥</span></h1>
+  <button class="iconbtn" id="helpBtn" aria-label="How to play">?</button>
+</header>
+<main id="main"></main>
+
+<div class="overlay" id="helpOv"><div class="modal help">
+  <button class="iconbtn close" data-close>✕</button>
+  <h2>How to play</h2>
+  <p>Find groups of <b>four</b> words that share something in common.</p>
+  <p>Tap four words and press <b>Submit</b>. Careful — some words look like they fit more than one group! You can make <b>4 mistakes</b>.</p>
+  <p>Each group has a color, from easiest to trickiest:</p>
+  <div class="ex"><span class="c0">Yellow</span><span class="c1">Light blue</span><span class="c2">Pink</span><span class="c3">Purple</span></div>
+  <p>A brand-new puzzle appears every <b>Monday</b> ♥</p>
+  <div class="row"><button class="btn small" id="resetBtn">Restart this puzzle</button></div>
+</div></div>
+
+<div class="overlay" id="winOv"><div class="modal win">
+  <button class="iconbtn close" data-close>✕</button>
+  <div class="big" id="winBig">💛💙</div>
+  <h2 id="winTitle">You did it!</h2>
+  <div class="grid" id="winGrid"></div>
+  <div class="msg" id="winMsg"></div>
+  <div class="sig" id="winSig"></div>
+  <div class="next" id="winNext"></div>
+  <div class="row"><button class="btn primary" data-close>Back to the board 💛</button></div>
+</div></div>
+
+<script>
+// === LOGIC START ===
+// Pure functions (no DOM) – also used by the node test script.
+function cleanWord(w){ return String(w == null ? "" : w).trim().replace(/\s+/g, " ").toUpperCase(); }
+function hashStr(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
+
+// Checks one puzzle. Returns { ok, errors[], title, groups:[{name, words, keys}] }
+function validatePuzzle(p){
+  const errors = [], groups = [];
+  if (!p || typeof p !== "object") return { ok: false, errors: ["This puzzle isn't written as a <code>{ ... }</code> block."], title: "", groups };
+  const title = String(p.title || "").trim();
+  if (!title) errors.push("Give it a <code>title</code>.");
+  if (!Array.isArray(p.groups)) { errors.push("It needs a <code>groups: [ ... ]</code> list with 4 groups."); return { ok: false, errors, title, groups }; }
+  if (p.groups.length !== 4) errors.push(`It has <b>${p.groups.length}</b> group${p.groups.length === 1 ? "" : "s"} — it needs exactly <b>4</b>.`);
+  const seen = {};
+  p.groups.forEach((g, gi) => {
+    const label = `Group ${gi + 1}${g && g.name ? ` ("${esc(String(g.name).trim())}")` : ""}`;
+    if (!g || typeof g !== "object") { errors.push(`${label} isn't written as <code>{ name: ..., words: [...] }</code>.`); return; }
+    const name = String(g.name || "").trim();
+    if (!name) errors.push(`${label} needs a <code>name</code>.`);
+    const raw = Array.isArray(g.words) ? g.words : [];
+    if (!Array.isArray(g.words)) errors.push(`${label} needs a <code>words: [ ... ]</code> list.`);
+    else if (raw.length !== 4) errors.push(`${label} has <b>${raw.length}</b> word${raw.length === 1 ? "" : "s"} — it needs exactly <b>4</b>.`);
+    const words = [], keys = [];
+    raw.forEach(w => {
+      const k = cleanWord(w);
+      if (!k) { errors.push(`${label} has an empty word (<code>""</code>).`); return; }
+      if (seen[k] !== undefined) errors.push(`<b>${esc(k)}</b> appears more than once${seen[k] === gi ? ` in ${label}` : ` (groups ${seen[k] + 1} and ${gi + 1})`}. Every word must be different.`);
+      else seen[k] = gi;
+      words.push(String(w).trim().replace(/\s+/g, " ")); keys.push(k);
+    });
+    groups.push({ name, words, keys });
+  });
+  return { ok: errors.length === 0, errors, title, groups };
+}
+
+// Starting tile order: a seeded shuffle where no row is already a whole group.
+function initialOrder(prep, seed){
+  const all = prep.groups.flatMap(g => g.keys), r = rng(seed);
+  for (let attempt = 0; attempt < 200; attempt++){
+    const a = all.slice();
+    for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    let bad = false;
+    for (let row = 0; row < 4 && !bad; row++){ const s = a.slice(row * 4, row * 4 + 4); bad = prep.groups.some(g => g.keys.every(k => s.includes(k))); }
+    if (!bad) return a;
+  }
+  return all;
+}
+function shuffleWords(arr, rand){ const a = arr.slice(); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+// Judges 4 selected words. Returns {type:"correct", group} | {type:"oneaway"} | {type:"wrong"} | {type:"invalid"}
+function judgeGuess(prep, selected, solved){
+  const keys = [...new Set((selected || []).map(cleanWord))];
+  if (keys.length !== 4) return { type: "invalid" };
+  let best = 0;
+  for (let gi = 0; gi < prep.groups.length; gi++){
+    if ((solved || []).includes(gi)) continue;
+    const n = keys.filter(k => prep.groups[gi].keys.includes(k)).length;
+    if (n === 4) return { type: "correct", group: gi };
+    best = Math.max(best, n);
+  }
+  return { type: best === 3 ? "oneaway" : "wrong" };
+}
+function guessId(selected){ return selected.map(cleanWord).sort().join("|"); }
+function groupOf(prep, key){ return prep.groups.findIndex(g => g.keys.includes(key)); }
+
+// ---- weekly schedule (pure, testable) ----
+function zonedParts(date, timeZone){
+  const f = new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+  const o = {}; for (const p of f.formatToParts(date)) o[p.type] = p.value;
+  return { y: +o.year, m: +o.month, d: +o.day, h: +o.hour % 24, mi: +o.minute, s: +o.second };
+}
+function dayNum(ymd){ const [y, m, d] = String(ymd).split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); }
+function ymdFromDayNum(n){ return new Date(n * 86400000).toISOString().slice(0, 10); }
+// Which week is it (in settings.timeZone)? Week 0 starts at settings.startDate 00:00.
+function weekInfo(now, settings){
+  const p = zonedParts(now, settings.timeZone || "America/Los_Angeles");
+  const today = Math.round(Date.UTC(p.y, p.m - 1, p.d) / 86400000), start = dayNum(settings.startDate);
+  const raw = Math.floor((today - start) / 7), week = Math.max(0, raw);
+  const nextChangeDay = start + 7 * (week + 1);
+  const msToNext = (nextChangeDay - today) * 86400000 - ((p.h * 60 + p.mi) * 60 + p.s) * 1000;
+  return { week, beforeStart: raw < 0, today: ymdFromDayNum(today), mondayOfWeek: ymdFromDayNum(start + 7 * week), nextChange: ymdFromDayNum(nextChangeDay), msToNext };
+}
+function puzzleIndexForWeek(week, count){ return count ? ((Math.max(0, week) % count) + count) % count : 0; }
+// === LOGIC END ===
+if (typeof window !== "undefined") (function(){
+  const $ = s => document.querySelector(s);
+  const LS = "melinaConnections.";
+  const store = { get(k, d){ try { const v = localStorage.getItem(LS + k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+                  set(k, v){ try { localStorage.setItem(LS + k, JSON.stringify(v)); } catch(e){} } };
+  const MAXM = Math.max(1, SETTINGS.mistakesAllowed || 4);
+
+  // ---- which puzzle is showing? ----
+  const params = new URLSearchParams(location.search);
+  let info = weekInfo(new Date(), SETTINGS), preview = "";
+  let week = info.week, cur;
+  if (SETTINGS.allowPreviewLinks){
+    if (params.has("date") && /^\d{4}-\d{2}-\d{2}$/.test(params.get("date"))){
+      const d = params.get("date"); info = weekInfo(new Date(d + "T12:00:00Z"), SETTINGS); week = info.week; preview = `Preview: ${d}`;
+    }
+    if (params.has("week") && /^\d+$/.test(params.get("week"))){ week = +params.get("week"); preview = `Preview: week ${week}`; }
+  }
+  const list = Array.isArray(PUZZLES) ? PUZZLES : [];
+  cur = puzzleIndexForWeek(week, list.length);
+  if (SETTINGS.allowPreviewLinks && params.has("puzzle") && /^\d+$/.test(params.get("puzzle")) && list.length){
+    cur = Math.min(Math.max(1, +params.get("puzzle")), list.length) - 1; preview = `Preview: puzzle ${cur + 1} of ${list.length} in the list`;
+  }
+  const P = list[cur] || {};
+  const num = preview && params.has("puzzle") ? cur + 1 : week + 1; // number shown as "Puzzle #N"
+  const prep = list.length ? validatePuzzle(P) : { ok: false, errors: ["The <code>PUZZLES</code> list is empty — add at least one puzzle."], title: "", groups: [] };
+  const seed = parseInt(hashStr(JSON.stringify([prep.groups.map(g => g.keys), P.seed || 0])), 36);
+  const progKey = "p." + hashStr(JSON.stringify([prep.title, prep.groups.map(g => [g.name, g.keys]), P.seed || 0])) + (preview && params.has("puzzle") ? ".preview" : ".w" + week);
+  const fresh = () => ({ order: prep.ok ? initialOrder(prep, seed) : [], solved: [], revealed: [], mistakes: 0, guesses: [], history: [], status: "playing" });
+  let prog = store.get(progKey, null);
+  if (!prog || !Array.isArray(prog.order) || (prep.ok && prog.order.length + prog.solved.length * 4 + (prog.revealed || []).length * 4 !== 16)) prog = fresh();
+  prog.revealed = prog.revealed || [];
+  let sel = [], busy = false, toastTimer = null, countdownTimer = null, newBar = -1;
+
+  function save(){ store.set(progKey, prog); }
+  function wordFor(key){ for (const g of prep.groups){ const i = g.keys.indexOf(key); if (i >= 0) return g.words[i]; } return key; }
+
+  function render(){
+    const m = $("#main"); m.innerHTML = "";
+    if (preview){ const pv = document.createElement("div"); pv.className = "preview"; pv.textContent = "👀 " + preview + " (only you see this link)"; m.appendChild(pv); }
+    const theme = document.createElement("div"); theme.className = "theme";
+    theme.innerHTML = `<div class="lbl">This week's puzzle</div><div class="txt"></div>`;
+    theme.querySelector(".txt").textContent = prep.title || P.title || "(no title)";
+    m.appendChild(theme);
+    const nm = document.createElement("div"); nm.className = "sub"; nm.textContent = `Puzzle #${num} · new puzzle every Monday`; m.appendChild(nm);
+    if (!prep.ok){
+      const e = document.createElement("div"); e.className = "error";
+      e.innerHTML = `<h3>Oops — this puzzle needs a tweak 🛠️</h3><div style="font-size:13px;color:#555">Puzzle ${cur + 1} in the list${P.title ? `: "${esc(P.title)}"` : ""}</div><ul>${prep.errors.map(x => `<li>${x}</li>`).join("")}</ul>` +
+        `<div style="font-size:13px;color:#555">Each puzzle needs <b>4 groups</b> of <b>4 different words</b>. Edit the <code>PUZZLES</code> list at the top of <code>index.html</code>, save, and refresh.</div>`;
+      m.appendChild(e);
+      return;
+    }
+    const ins = document.createElement("div"); ins.className = "instr"; ins.textContent = prog.status === "playing" ? "Create four groups of four!" : (prog.status === "won" ? "Solved! 💛" : "All groups revealed 💙"); m.appendChild(ins);
+    const toast = document.createElement("div"); toast.className = "toast"; toast.id = "toast"; m.appendChild(toast);
+    const board = document.createElement("div"); board.className = "board"; board.id = "board";
+    [...prog.solved, ...prog.revealed].forEach(gi => {
+      const g = prep.groups[gi], b = document.createElement("div");
+      b.className = `bar c${gi}` + (gi === newBar ? " new" : "") + (prog.revealed.includes(gi) ? " revealed" : "");
+      b.innerHTML = `<h3></h3><p></p>`; b.querySelector("h3").textContent = g.name; b.querySelector("p").textContent = g.words.join(", ");
+      board.appendChild(b);
+    });
+    newBar = -1;
+    prog.order.forEach(k => {
+      const t = document.createElement("button"); t.className = "tile" + (sel.includes(k) ? " sel" : ""); t.dataset.k = k;
+      t.innerHTML = `<span class="t"></span>`; t.querySelector(".t").textContent = wordFor(k);
+      t.onclick = () => toggle(k, t);
+      board.appendChild(t);
+    });
+    m.appendChild(board);
+    if (prog.status === "playing"){
+      const mi = document.createElement("div"); mi.className = "mistakes";
+      mi.innerHTML = `<span>Mistakes remaining:</span><span class="dots">${Array.from({ length: MAXM }, (_, i) => `<span class="dot${i >= MAXM - prog.mistakes ? " gone" : ""}"></span>`).join("")}</span>`;
+      m.appendChild(mi);
+      const c = document.createElement("div"); c.className = "controls";
+      c.innerHTML = `<button class="pill" id="shufBtn">Shuffle</button><button class="pill" id="deselBtn">Deselect all</button><button class="pill dark" id="subBtn">Submit</button>`;
+      m.appendChild(c);
+      $("#shufBtn").onclick = () => { if (busy) return; prog.order = shuffleWords(prog.order, Math.random); save(); render(); };
+      $("#deselBtn").onclick = () => { if (busy) return; sel = []; render(); };
+      $("#subBtn").onclick = submit;
+      updateButtons();
+    } else {
+      const c = document.createElement("div"); c.className = "controls";
+      c.innerHTML = `<button class="pill dark" id="resBtn">View message 💌</button>`; m.appendChild(c);
+      $("#resBtn").onclick = () => showEnd(false);
+      const n = document.createElement("div"); n.className = "nextline"; n.id = "boardNext"; m.appendChild(n); tickCountdown();
+    }
+    const h = document.createElement("div"); h.className = "hearts"; h.textContent = "♥ ♥ ♥"; m.appendChild(h);
+    fitTiles();
+  }
+
+  function updateButtons(){
+    const s = $("#subBtn"), d = $("#deselBtn"); if (!s) return;
+    s.disabled = sel.length !== 4 || busy; d.disabled = sel.length === 0 || busy;
+  }
+  function toggle(k, el){
+    if (busy || prog.status !== "playing") return;
+    if (sel.includes(k)) sel = sel.filter(x => x !== k);
+    else if (sel.length < 4) sel.push(k);
+    else return;
+    el.classList.toggle("sel", sel.includes(k)); updateButtons();
+  }
+  function fitTiles(){
+    document.querySelectorAll(".tile .t").forEach(t => {
+      const box = t.parentElement; let fs = window.innerWidth >= 700 ? 19 : 17;
+      t.style.fontSize = fs + "px";
+      const maxH = box.clientHeight - 8;
+      t.style.overflowWrap = "normal";
+      while (fs > 9 && (t.scrollWidth > t.clientWidth + 0.5 || t.scrollHeight > maxH)){ fs -= 0.5; t.style.fontSize = fs + "px"; }
+      if (t.scrollWidth > t.clientWidth + 0.5) t.style.overflowWrap = "anywhere"; // very long single word: let it break
+    });
+  }
+  function showToast(text, ms){
+    const t = $("#toast"); if (!t) return; t.textContent = text; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), ms || 1800);
+  }
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  async function submit(){
+    if (busy || sel.length !== 4 || prog.status !== "playing") return;
+    const id = guessId(sel);
+    if (prog.guesses.includes(id)){ showToast("Already guessed!"); return; }
+    busy = true; updateButtons();
+    const tiles = sel.map(k => document.querySelector(`.tile[data-k="${CSS.escape(k)}"]`)).filter(Boolean);
+    tiles.forEach((t, i) => setTimeout(() => t.classList.add("jump"), i * 90));
+    await wait(90 * 4 + 300);
+    tiles.forEach(t => t.classList.remove("jump"));
+    const r = judgeGuess(prep, sel, prog.solved);
+    prog.guesses.push(id); prog.history.push(sel.map(k => groupOf(prep, k)));
+    if (r.type === "correct"){
+      prog.solved.push(r.group); prog.order = prog.order.filter(k => !prep.groups[r.group].keys.includes(k));
+      sel = []; newBar = r.group;
+      if (prog.solved.length === 4) prog.status = "won";
+      save(); busy = false; render();
+      if (prog.status === "won"){ await wait(700); showEnd(true); }
+      return;
+    }
+    prog.mistakes++;
+    tiles.forEach(t => t.classList.add("shake")); await wait(380); tiles.forEach(t => t.classList.remove("shake"));
+    const dots = document.querySelectorAll(".dot:not(.gone)"); if (dots.length) dots[dots.length - 1].classList.add("gone");
+    if (r.type === "oneaway") showToast("One away...");
+    if (prog.mistakes >= MAXM){
+      prog.status = "lost"; sel = []; save();
+      showToast("Next time, babe 💛", 1600); await wait(1300);
+      for (let gi = 0; gi < 4; gi++){
+        if (prog.solved.includes(gi)) continue;
+        prog.revealed.push(gi); prog.order = prog.order.filter(k => !prep.groups[gi].keys.includes(k)); newBar = gi;
+        save(); render(); await wait(650);
+      }
+      busy = false; render(); await wait(400); showEnd(true); return;
+    }
+    save(); busy = false; updateButtons();
+  }
+
+  function floatHearts(n){ const icons = ["💛", "💙", "♥️", "💛", "🩵", "🩷"]; for (let k = 0; k < n; k++){ const h = document.createElement("div"); h.className = "floatheart";
+    h.textContent = icons[k % icons.length]; h.style.left = (5 + Math.random() * 90) + "vw"; h.style.animationDelay = (Math.random() * .8) + "s";
+    h.style.fontSize = (18 + Math.random() * 20) + "px"; document.body.appendChild(h); setTimeout(() => h.remove(), 4200); } }
+  function fmtCountdown(ms){
+    if (ms <= 0) return "any second now — refresh! 🎉";
+    const s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+    return (d ? `${d}d ` : "") + `${h}h ${String(m).padStart(2, "0")}m ${String(ss).padStart(2, "0")}s`;
+  }
+  function tickCountdown(){
+    const html = preview ? `Puzzle #${num} · new puzzle every Monday`
+      : `Puzzle #${num} · new puzzle every Monday<br>Next puzzle in <b>${fmtCountdown(weekInfo(new Date(), SETTINGS).msToNext)}</b>`;
+    ["#winNext", "#boardNext"].forEach(s => { const el = $(s); if (el) el.innerHTML = html; });
+  }
+  clearInterval(countdownTimer); countdownTimer = setInterval(tickCountdown, 1000);
+  function showEnd(isFresh){
+    const won = prog.status === "won";
+    $("#winBig").textContent = won ? "💛💙" : "🫶";
+    $("#winTitle").textContent = won ? (prog.mistakes === 0 ? "Perfect, Melina! 🌟" : "You did it, Melina!") : "So close, babe!";
+    $("#winGrid").innerHTML = prog.history.map(row => row.map(g => `<span class="c${g}"></span>`).join("")).join("");
+    $("#winMsg").textContent = (won ? "" : "You'll get the next one. And either way:\n") + (P.winMessage || "I love you!");
+    $("#winSig").textContent = "— love, " + SETTINGS.fromName + " ♥";
+    tickCountdown();
+    $("#winOv").classList.add("show"); if (isFresh) floatHearts(won ? 18 : 10);
+  }
+
+  function closeAll(){ document.querySelectorAll(".overlay").forEach(o => o.classList.remove("show")); }
+  document.querySelectorAll(".overlay").forEach(o => o.addEventListener("click", e => { if (e.target === o || e.target.closest("[data-close]")) closeAll(); }));
+  $("#helpBtn").onclick = () => $("#helpOv").classList.add("show");
+  $("#resetBtn").onclick = () => { if (!confirm("Restart this week's puzzle? Your progress will be cleared.")) return; prog = fresh(); sel = []; save(); closeAll(); render(); };
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeAll(); if (e.key === "Enter" && !document.querySelector(".overlay.show")) submit(); });
+  window.addEventListener("resize", fitTiles);
+  // If the page stays open across Monday midnight, load the new puzzle when she comes back.
+  if (!preview) document.addEventListener("visibilitychange", () => { if (!document.hidden && weekInfo(new Date(), SETTINGS).week !== week) location.reload(); });
+  window.__conn = { prep, week, cur, info, progKey, get prog(){ return prog; }, get sel(){ return sel; } };
+  render();
+  if (prog.status !== "playing") setTimeout(() => showEnd(false), 250);
+  else if (!store.get("seenHelp", false)) { store.set("seenHelp", true); $("#helpOv").classList.add("show"); }
+})();
+</script>
+</body>
+</html>
